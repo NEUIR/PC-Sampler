@@ -56,7 +56,7 @@ python eval.py \
     --gen_length 256 \
     --steps 256 \
     --block_length 256 \
-    --mode pc_sampler \ # 可选 eb_sampler,entropy,fast_dllm,linear,margin,original
+    --mode pc_sampler \ # eb_sampler,entropy,fast_dllm,linear,margin,original
     --lambd 0.25 \
     --alpha 10 \
     --data_path ../data/humaneval.jsonl \
