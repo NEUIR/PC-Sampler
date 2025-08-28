@@ -10,7 +10,7 @@
 <p align="center">•
  <a href="#-decoding trajectory">📈 Decoding Trajectory</a> •
  <a href="#-algorithm">💻 Algorithm</a> •
- <a href="#-contact">📧 Contact</a> •
+ <a href="#-contact">📧 Contact</a> 
 </p>
 
 # 📖 Introduction
