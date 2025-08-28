@@ -10,9 +10,7 @@
 <p align="center">•
  <a href="#-decoding trajectory">📈 Decoding Trajectory</a> •
  <a href="#-algorithm">💻 Algorithm</a> •
- <a href="#-license">📄 Lisense</a> •
  <a href="#-contact">📧 Contact</a> •
- <a href="#-star-history">📈 Star History</a>
 </p>
 
 # 📖 Introduction
