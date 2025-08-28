@@ -1,0 +1,9 @@
+transformers==4.49.0
+lm_eval==0.4.8
+accelerate==0.34.2
+antlr4-python3-runtime==4.11
+math_verify
+sympy
+hf_xet
+torch
+tqdm
