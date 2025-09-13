@@ -115,7 +115,7 @@ In contrast, our PC-Sampler introduces explicit trajectory control through posit
 | Sampling Strategy   | Decoding Trajectory Heatmap   | Sampling Strategy   | Decoding Trajectory Heatmap   |
 |---------------------|-------------------------------|---------------------|-------------------------------|
 | Confidence-based    | ![](figs/confidence.png)      | Entropy-based       | ![](figs/entropy.png)         |  
-| Margin-based        | ![](figs/margin.png)          | linear position   | ![](figs/linear.png)      |  
+| Margin-based        | ![](figs/margin.png)          | PC Sampler   | ![](figs/linear.png)      |  
 
 ## 🔑 Key Observations
 
