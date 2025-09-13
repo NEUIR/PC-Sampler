@@ -6,100 +6,95 @@
 export HF_ALLOW_CODE_EVAL=1
 export HF_DATASETS_TRUST_REMOTE_CODE=true
 
-echo "---------------------------Fast-dLLM---------------------------"
+echo "---------------------------ReMDM---------------------------"
 
 echo "---------------------------Eval HumanEval---------------------------"
 
 python eval.py \
     --task 'humaneval' \
     --model_name 'GSAI-ML/LLaDA-8B-Instruct' \
-    --device 'cuda:7' \
+    --device 'cuda:5' \
     --gen_length 256 \
     --steps 256 \
-    --block_length 32 \
-    --mode fast_dllm \
-    --thread 0.9 \
+    --block_length 256 \
+    --mode remdm \
     --data_path ../data/humaneval.jsonl \
-    --result_path results/humaneval_fast_dllm
+    --result_path results/humaneval_remdm
 
 python ../utils/judge_python_code.py \
-    --folder_path results/humaneval_fast_dllm \
-    --output_path results/humaneval_fast_dllm.txt
+    --folder_path results/humaneval_remdm \
+    --output_path results/humaneval_remdm.txt
 
 echo "---------------------------Eval MBPP---------------------------"
 
 python eval.py \
     --task 'mbpp' \
     --model_name 'GSAI-ML/LLaDA-8B-Instruct' \
-    --device 'cuda:7' \
+    --device 'cuda:4' \
     --gen_length 128 \
     --steps 128 \
-    --block_length 16 \
-    --mode fast_dllm \
-    --thread 0.9 \
+    --block_length 128 \
+    --mode remdm \
     --data_path ../data/sanitized-mbpp.json \
-    --result_path results/mbpp_fast_dllm
+    --result_path results/mbpp_remdm
 
 python ../utils/judge_python_code.py \
-    --folder_path results/mbpp_fast_dllm \
-    --output_path results/mbpp_fast_dllm.txt
+    --folder_path results/mbpp_remdm \
+    --output_path results/mbpp_remdm.txt
 
 echo "---------------------------Eval MATH-500---------------------------"
 
 python eval.py \
     --task 'math500' \
     --model_name 'GSAI-ML/LLaDA-8B-Instruct' \
-    --device 'cuda:7' \
+    --device 'cuda:4' \
     --gen_length 1024 \
     --steps 1024 \
-    --block_length 128 \
-    --mode fast_dllm \
-    --thread 0.9 \
+    --block_length 1024 \
+    --mode remdm \
     --data_path ../data/math500.jsonl \
-    --result_path results/math500_fast_dllm.txt
+    --result_path results/math500_remdm.txt
 
 echo "---------------------------Eval Sudoku---------------------------"
 
-python eval.py \
+python eval_remdm.py \
     --task 'sudoku' \
     --model_name 'GSAI-ML/LLaDA-8B-Instruct' \
-    --device 'cuda:7' \
+    --device 'cuda:4' \
     --gen_length 128 \
-    --steps 128 \
-    --block_length 32 \
-    --mode fast_dllm \
-    --thread 0.9 \
+    --init_unmask_ratio 1 \
+    --loop_steps 0 \
+    --unmask_k 1 \
     --data_path ../data/sudoku.csv \
-    --result_path results/sudoku_fast_dllm.txt
+    --result_path results/sudoku_remdm.txt
 
 echo "---------------------------Eval Countdown---------------------------"
 
-python eval.py \
+python eval_remdm.py \
     --task 'countdown' \
     --model_name 'GSAI-ML/LLaDA-8B-Instruct' \
-    --device 'cuda:7' \
+    --device 'cuda:4' \
     --gen_length 128 \
-    --steps 128 \
-    --block_length 32 \
-    --mode fast_dllm \
-    --thread 0.9 \
+    --init_unmask_ratio 1 \
+    --loop_steps 0 \
+    --unmask_k 1 \
     --data_path ../data/countdown.jsonl \
-    --result_path results/countdown_fast_dllm.txt
+    --result_path results/countdown_margin.txt
 
 echo "---------------------------Eval GSM8k---------------------------"
 
-accelerate launch eval_llada.py \
+accelerate launch eval_llada_remdm.py \
     --tasks gsm8k \
     --num_fewshot 4 \
     --model llada_dist \
     --confirm_run_unsafe_code \
-    --model_args model_path='GSAI-ML/LLaDA-8B-Instruct',gen_length=256,steps=256,block_length=32,thread=0.9,mode=fast_dllm
+    --model_args model_path='GSAI-ML/LLaDA-8B-Instruct',gen_length=256,steps=256,block_length=256,mode=remdm
 
 echo "---------------------------Eval GPQA---------------------------"
 
-accelerate launch eval_llada.py \
+accelerate launch eval_llada_remdm.py \
     --tasks gpqa \
     --num_fewshot 5 \
     --model llada_dist \
     --confirm_run_unsafe_code \
-    --model_args model_path='GSAI-ML/LLaDA-8B-Instruct',gen_length=256,steps=256,block_length=32,thread=0.9,mode=fast_dllm
+    --model_args model_path='GSAI-ML/LLaDA-8B-Instruct',gen_length=256,steps=256,block_length=256,mode=remdm

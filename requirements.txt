@@ -7,3 +7,4 @@ sympy
 hf_xet
 torch
 tqdm
+seaborn

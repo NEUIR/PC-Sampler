@@ -86,7 +86,7 @@ python eval.py \
     --steps 128 \
     --block_length 128 \
     --mode pc_sampler \
-    --lambd 0.5 \
+    --lambd 1 \
     --alpha 10 \
     --data_path ../data/countdown.jsonl \
     --result_path results/countdown_pc_sampler.txt

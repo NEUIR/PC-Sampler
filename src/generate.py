@@ -203,12 +203,14 @@ def get_transfer_index_dynamic(logits, temperature, remasking, mask_index, x, nu
 
 @torch.no_grad()
 def generate(model, prompt, steps=128, gen_length=128, block_length=128, temperature=0.,
-             cfg_scale=0., remasking='low_confidence', mask_id=126336):
+             cfg_scale=0., remasking='low_confidence', mask_id=126336, return_order=False):
 
     
     x = torch.full((1, prompt.shape[1] + gen_length), mask_id, dtype=torch.long).to(model.device)
     x[:, :prompt.shape[1]] = prompt.clone()
     prompt_index = (x != mask_id)
+    if return_order:
+        orders = {}
     
     assert gen_length % block_length == 0
     num_blocks = gen_length // block_length
@@ -248,17 +250,24 @@ def generate(model, prompt, steps=128, gen_length=128, block_length=128, tempera
             for j in range(confidence.shape[0]):
                 _, select_index = torch.topk(confidence[j], k=num_transfer_tokens[j, i])
                 transfer_index[j, select_index] = True
+                if return_order:
+                    if num_block+1 not in orders:
+                        orders[num_block+1] = []
+                    orders[num_block+1].append((select_index-prompt.shape[1]).tolist())
             x[transfer_index] = x0[transfer_index]
-            
+    if return_order:
+        return x, orders        
     return x
 
 @torch.no_grad()
 def generate_with_pc_sampler(model, prompt, steps=128, gen_length=128, block_length=128, lambd=1, alpha=1, baseline_name='P_baseline.json', temperature=0.,
-                  cfg_scale=0., remasking='low_confidence', mask_id=126336):
+                  cfg_scale=0., remasking='low_confidence', mask_id=126336, return_order=False):
     
     global BASE_LINE
     if BASE_LINE is None:
-        load_baseline(model, baseline_name)    
+        load_baseline(model, baseline_name)
+    if return_order:
+        orders = {}
     
     x = torch.full((1, prompt.shape[1] + gen_length), mask_id, dtype=torch.long).to(model.device)
     x[:, :prompt.shape[1]] = prompt.clone()
@@ -316,8 +325,13 @@ def generate_with_pc_sampler(model, prompt, steps=128, gen_length=128, block_len
             for j in range(confidence.shape[0]):
                 _, select_index = torch.topk(confidence[j], k=num_transfer_tokens[j, i])
                 transfer_index[j, select_index+prompt.shape[1]+num_block*block_length] = True
+                if return_order:
+                    if num_block+1 not in orders:
+                        orders[num_block+1] = []
+                    orders[num_block+1].append(select_index.tolist())
             x[transfer_index] = x0[transfer_index]
-
+    if return_order:
+        return x, orders
     return x
 
 @torch.no_grad()
@@ -414,9 +428,11 @@ def generate_with_fast_dllm(model, prompt, steps=128, gen_length=128, block_leng
 
 @torch.no_grad()
 def generate_with_entropy(model, prompt, steps=128, gen_length=128, block_length=128, temperature=0.,
-                            cfg_scale=0., remasking='low_confidence', mask_id=126336):
+                            cfg_scale=0., remasking='low_confidence', mask_id=126336, return_order=False):
     x = torch.full((1, prompt.shape[1] + gen_length), mask_id, dtype=torch.long).to(model.device)
     x[:, :prompt.shape[1]] = prompt.clone()
+    if return_order:
+        orders = {}
 
     prompt_index = (x != mask_id)
 
@@ -461,14 +477,22 @@ def generate_with_entropy(model, prompt, steps=128, gen_length=128, block_length
             for j in range(confidence.shape[0]):
                 _, select_index = torch.topk(confidence[j], k=num_transfer_tokens[j, i])
                 transfer_index[j, select_index + prompt.shape[1]] = True
+                if return_order:
+                    if num_block+1 not in orders:
+                        orders[num_block+1] = []
+                    orders[num_block+1].append(select_index.tolist())
             x[transfer_index] = x0[transfer_index]
+    if return_order:
+        return x, orders
     return x
 
 @torch.no_grad()
 def generate_with_margin(model, prompt, steps=128, gen_length=128, block_length=128, temperature=0.,
-                            cfg_scale=0., remasking='low_confidence', mask_id=126336):
+                            cfg_scale=0., remasking='low_confidence', mask_id=126336, return_order=False):
     x = torch.full((1, prompt.shape[1] + gen_length), mask_id, dtype=torch.long).to(model.device)
     x[:, :prompt.shape[1]] = prompt.clone()
+    if return_order:
+        orders = {}
 
     prompt_index = (x != mask_id)
 
@@ -513,12 +537,18 @@ def generate_with_margin(model, prompt, steps=128, gen_length=128, block_length=
             for j in range(confidence.shape[0]):
                 _, select_index = torch.topk(confidence[j], k=num_transfer_tokens[j, i])
                 transfer_index[j, select_index + prompt.shape[1]] = True
+                if return_order:
+                    if num_block+1 not in orders:
+                        orders[num_block+1] = []
+                    orders[num_block+1].append(select_index.tolist())
             x[transfer_index] = x0[transfer_index]
+    if return_order:
+        return x, orders
     return x
 
 @torch.no_grad()
 def generate_with_linear_position(model, prompt, steps=128, gen_length=128, block_length=128, lambd=1, alpha=1, baseline_name='P_baseline.json', temperature=0.,
-                  cfg_scale=0., remasking='low_confidence', mask_id=126336):
+                  cfg_scale=0., remasking='low_confidence', mask_id=126336, return_order=False):
     
     global BASE_LINE
     if BASE_LINE is None:
@@ -526,6 +556,8 @@ def generate_with_linear_position(model, prompt, steps=128, gen_length=128, bloc
     
     x = torch.full((1, prompt.shape[1] + gen_length), mask_id, dtype=torch.long).to(model.device)
     x[:, :prompt.shape[1]] = prompt.clone()
+    if return_order:
+        orders = {}
 
     prompt_index = (x != mask_id)
 
@@ -580,6 +612,108 @@ def generate_with_linear_position(model, prompt, steps=128, gen_length=128, bloc
             for j in range(confidence.shape[0]):
                 _, select_index = torch.topk(confidence[j], k=num_transfer_tokens[j, i])
                 transfer_index[j, select_index+prompt.shape[1]+num_block*block_length] = True
+                if return_order:
+                    if num_block+1 not in orders:
+                        orders[num_block+1] = []
+                    orders[num_block+1].append(select_index.tolist())
             x[transfer_index] = x0[transfer_index]
+    if return_order:
+        return x, orders
+    return x
 
+@torch.no_grad()
+def generate_with_remdm(model, prompt, gen_length=32, init_unmask_ratio=0.875, unmask_k=1, loop_steps=32, temperature=0., cfg_scale=0., remasking='low_confidence', mask_id=126336, tokenizer=None):
+    assert 0.0 <= init_unmask_ratio <= 1.0, "init_unmask_ratio must be between 0 and 1"
+    num_initial_tokens = gen_length * init_unmask_ratio
+    assert num_initial_tokens == int(num_initial_tokens), "gen_length * init_unmask_ratio must be an integer"
+    num_initial_tokens = int(num_initial_tokens)
+    assert gen_length % unmask_k == 0, "gen_length must be divisible by unmask_k"
+    assert num_initial_tokens % unmask_k == 0, "init_unmask_ratio * gen_length must be divisible by unmask_k"
+    x = torch.full((1, prompt.shape[1] + gen_length), mask_id, dtype=torch.long).to(model.device)
+    x[:, :prompt.shape[1]] = prompt.clone()
+    prompt_index = (x != mask_id)
+    num_loops = num_initial_tokens // unmask_k
+    for _ in range(num_loops):
+        mask_index = (x == mask_id)
+        if not mask_index.any():
+            break
+
+        if cfg_scale > 0.:
+            un_x = x.clone()
+            un_x[prompt_index] = mask_id
+            x_ = torch.cat([x, un_x], dim=0)
+            logits = model(x_).logits
+            logits, un_logits = torch.chunk(logits, 2, dim=0)
+            logits = un_logits + (cfg_scale + 1) * (logits - un_logits)
+        else:
+            logits = model(x).logits
+        logits_with_noise = add_gumbel_noise(logits, temperature=temperature)
+        x0 = torch.argmax(logits_with_noise, dim=-1)
+        p = F.softmax(logits, dim=-1)
+        x0_p = torch.gather(p, dim=-1, index=x0.unsqueeze(-1)).squeeze(-1)
+        confidence = torch.where(mask_index, x0_p, -torch.inf)
+        _, select_indices = torch.topk(confidence, k=unmask_k)
+        x[0, select_indices] = x0[0, select_indices]
+        x_result = tokenizer.decode(x[0, prompt.shape[1]:], skip_special_tokens=False)
+    for _ in range(loop_steps):
+        unmasked_gen_index = (x != mask_id) & (~prompt_index)
+        num_unmasked_gen = torch.sum(unmasked_gen_index).item()
+        if num_unmasked_gen == 0:
+            continue
+        current_remask_k = min(unmask_k, num_unmasked_gen)
+        if cfg_scale > 0.:
+            un_x = x.clone()
+            un_x[prompt_index] = mask_id
+            x_ = torch.cat([x, un_x], dim=0)
+            logits = model(x_).logits
+            logits, un_logits = torch.chunk(logits, 2, dim=0)
+            logits = un_logits + (cfg_scale + 1) * (logits - un_logits)
+        else:
+            logits = model(x).logits
+        p = F.softmax(logits, dim=-1)
+        current_token_p = torch.gather(p, dim=-1, index=x.unsqueeze(-1)).squeeze(-1)
+        confidence = torch.where(unmasked_gen_index, current_token_p, torch.inf)
+        _, remask_indices = torch.topk(confidence, k=current_remask_k, largest=False)
+        x[0, remask_indices] = mask_id
+        mask_index_after_remask = (x == mask_id)
+        if cfg_scale > 0.:
+            un_x = x.clone()
+            un_x[prompt_index] = mask_id
+            x_ = torch.cat([x, un_x], dim=0)
+            logits = model(x_).logits
+            logits, un_logits = torch.chunk(logits, 2, dim=0)
+            logits = un_logits + (cfg_scale + 1) * (logits - un_logits)
+        else:
+            logits = model(x).logits
+        logits_with_noise = add_gumbel_noise(logits, temperature=temperature)
+        x0 = torch.argmax(logits_with_noise, dim=-1)
+        p_new = F.softmax(logits, dim=-1)
+        x0_p_new = torch.gather(p_new, dim=-1, index=x0.unsqueeze(-1)).squeeze(-1)
+        confidence_for_unmasking = torch.where(mask_index_after_remask, x0_p_new, -torch.inf)
+        _, unmask_indices = torch.topk(confidence_for_unmasking, k=current_remask_k)
+        x[0, unmask_indices] = x0[0, unmask_indices]
+        x_result = tokenizer.decode(x[0, prompt.shape[1]:], skip_special_tokens=False)
+    while (x == mask_id).any():
+        mask_index = (x == mask_id)
+        num_masked_left = torch.sum(mask_index).item()
+        if num_masked_left == 0:
+            break
+        current_unmask_k = min(unmask_k, num_masked_left)
+        if cfg_scale > 0.:
+            un_x = x.clone()
+            un_x[prompt_index] = mask_id
+            x_ = torch.cat([x, un_x], dim=0)
+            logits = model(x_).logits
+            logits, un_logits = torch.chunk(logits, 2, dim=0)
+            logits = un_logits + (cfg_scale + 1) * (logits - un_logits)
+        else:
+            logits = model(x).logits
+        logits_with_noise = add_gumbel_noise(logits, temperature=temperature)
+        x0 = torch.argmax(logits_with_noise, dim=-1)
+        p = F.softmax(logits, dim=-1)
+        x0_p = torch.gather(p, dim=-1, index=x0.unsqueeze(-1)).squeeze(-1)
+        confidence = torch.where(mask_index, x0_p, -torch.inf)
+        _, select_indices = torch.topk(confidence, k=current_unmask_k)
+        x[0, select_indices] = x0[0, select_indices]
+        x_result = tokenizer.decode(x[0, prompt.shape[1]:], skip_special_tokens=False)
     return x

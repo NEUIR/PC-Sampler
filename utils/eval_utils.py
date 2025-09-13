@@ -20,6 +20,10 @@ def query_extract(input, task):
         return countdown_prompt(input['input'])
     elif task =='sudoku':
         return sudoku_prompt(input['Puzzle'])
+    elif task =='gsm8k':
+        return gsm8k_prompt(input['question'])
+    elif task =='gpqa':
+        return gpqa_prompt(input['question'], input['correct_answer'], input['option_A'], input['option_B'], input['option_C'])
     else:
         raise NotImplementedError(f"Mode {task} not implemented.")
     

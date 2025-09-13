@@ -44,19 +44,13 @@ class LLaDAEvalHarness(LM):
         mc_num=128,
         is_check_greedy=True,
         cfg=0.,
-        steps=1024,
         gen_length=1024,
-        block_length=1024,
         remasking='low_confidence',
         device="cuda",
         temperature=0.,
-        mode='original',
-        lambd=0.25,
-        alpha=10,
-        baseline_name='baseline/P_baseline_llada.json',
-        thread=0.9,
-        gamma=0.01,
-        num_remask_tokens=4,
+        init_unmask_ratio=0.75,
+        unmask_k=10,
+        loop_steps=10,
         **kwargs,
     ):
         '''
@@ -117,18 +111,14 @@ class LLaDAEvalHarness(LM):
         self.is_check_greedy = is_check_greedy
 
         self.cfg = cfg
-        self.steps = steps
         self.gen_length = gen_length
-        self.block_length = block_length
         self.temperature = temperature
-        self.mode = mode
         self.remasking = remasking 
-        self.alpha = alpha 
-        self.lambd = lambd
-        self.baseline_name = baseline_name
-        self.thread = thread
-        self.gamma = gamma
-        self.num_remask_tokens = num_remask_tokens
+        
+        self.init_unmask_ratio = init_unmask_ratio
+        self.unmask_k = unmask_k
+        self.loop_steps = loop_steps
+        
 
     @property
     def rank(self):
@@ -288,31 +278,8 @@ class LLaDAEvalHarness(LM):
         for elem in tqdm(ds, desc="Generating..."):
             prompt = elem["question"].unsqueeze(0).to(self.device)
             stop_tokens = elem["until"]
-            if self.mode == 'original':
-                from src.generate import generate
-                generated_answer = generate(self.model, prompt, self.steps, self.gen_length, self.block_length, self.temperature, cfg_scale=0., remasking=self.remasking)
-            elif self.mode == 'pc_sampler':
-                from src.generate import generate_with_pc_sampler
-                generated_answer = generate_with_pc_sampler(self.model, prompt, self.steps, self.gen_length, self.block_length, self.lambd, self.alpha, 
-                                               self.baseline_name, self.temperature, cfg_scale=0., remasking=self.remasking)
-            elif self.mode == 'eb_sampler':
-                from src.generate import generate_with_eb_sampler
-                generated_answer = generate_with_eb_sampler(self.model, prompt, self.gamma, self.gen_length, self.temperature, cfg_scale=0.)
-            elif self.mode == 'fast_dllm':
-                from src.generate import generate_with_fast_dllm
-                generated_answer = generate_with_fast_dllm(self.model, prompt, self.steps, self.gen_length, self.block_length, self.temperature, remasking=self.remasking, thread=self.thread)
-            elif self.mode == 'entropy':
-                from src.generate import generate_with_entropy
-                generated_answer = generate_with_entropy(self.model, prompt, self.steps, self.gen_length, self.block_length, self.temperature, cfg_scale=0., remasking=self.remasking)
-            elif self.mode == 'margin':
-                from src.generate import generate_with_margin
-                generated_answer = generate_with_margin(self.model, prompt, self.steps, self.gen_length, self.block_length, self.temperature, cfg_scale=0., remasking=self.remasking)
-            elif self.mode == 'linear':
-                from src.generate import generate_with_linear_position
-                generated_answer = generate_with_linear_position(self.model, prompt, self.steps, self.gen_length, self.block_length, self.lambd, self.alpha, self.baseline_name, self.temperature, cfg_scale=0., remasking=self.remasking)
-            else:
-                raise NotImplementedError(f"Mode {self.mode} not implemented.")
-            
+            from src.generate import generate_with_remdm
+            generated_answer = generate_with_remdm(self.model, prompt, self.gen_length, self.init_unmask_ratio,  self.unmask_k, self.loop_steps, self.temperature, cfg_scale=self.cfg)
             generated_answer = self.tokenizer.decode(generated_answer[0][prompt.shape[1]:], skip_special_tokens=False)
             for stop_seq in stop_tokens:
                     if stop_seq in generated_answer:

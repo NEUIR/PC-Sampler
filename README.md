@@ -1,5 +1,14 @@
 # PC-Sampler: Position-Aware Calibration of Decoding Bias in Masked Diffusion Models
-[![Github](https://img.shields.io/badge/PC_Sampler-000000?style=for-the-badge&logo=github&logoColor=000&logoColor=white)](https://github.com/NEUIR/PC-Sampler)
+
+<p align="center">
+<a href="https://github.com/NEUIR/PC-Sampler" alt="GitHub">
+    <img src="https://img.shields.io/badge/GitHub-PC--Sampler-black?logo=github"/>
+  </a>
+  <a href="https://arxiv.org/pdf/2508.13021" alt="Paper">
+    <img src="https://img.shields.io/badge/Paper-PC--Sampler-B31B1B?logo=arxiv&logoColor=white"/>
+  </a>
+</p>
+
 
 <p align="center">•
  <a href="#-introduction"> 📖 Introduction </a> •
@@ -19,6 +28,9 @@
 **PC-Sampler** is a novel decoding strategy for Masked Diffusion Models (MDMs) that unifies global trajectory planning with content-aware informativeness maximization. It addresses the key limitations of traditional uncertainty-based samplers: a lack of global trajectory control and a bias toward "trivial tokens." By using a position-aware weighting mechanism and a calibrated confidence score, PC-Sampler guides the decoding path and prevents the premature selection of unimportant tokens, significantly improving generation quality.
 
 # 🎉 News
+
+- 20250912: This release provides enhanced support for decoding with LLaDA, integrating a variety of recent semi- and non-autoregressive sampling strategies, including: [ReMDM](https://arxiv.org/pdf/2503.00307), [Fast-dLLM](https://arxiv.org/pdf/2505.22618v1), [Semi-AR](https://arxiv.org/abs/2502.09992), Margin-based sampler, Entropy-based sampler and Confidence-based sampler.
+- 20250819: Released our Paper on [arXiv](https://arxiv.org/abs/2508.13021). Released our Code on [GitHub](https://github.com/NEUIR/PC-Sampler). 
 
 <!-- * 20241111: Released our [VisRAG Pipeline](https://github.com/OpenBMB/VisRAG/tree/master/scripts/demo/visrag_pipeline) on GitHub, now supporting visual understanding across multiple PDF documents. -->
 
@@ -70,6 +82,7 @@ Following are the evaluation bash scripts for all decoding methods.
 | Semi-Autoregressive   | <pre style="white-space: pre-wrap; margin:0;">cd scripts<br>bash eval_semi_ar.sh</pre> | Entropy               | <pre style="white-space: pre-wrap; margin:0;">cd scripts<br>bash eval_entropy.sh</pre> |
 | EB-Sampler            | <pre style="white-space: pre-wrap; margin:0;">cd scripts<br>bash eval_eb_sampler.sh</pre> | Fast-dLLM             | <pre style="white-space: pre-wrap; margin:0;">cd scripts<br>bash eval_fast_dllm.sh</pre> |
 | Margin                | <pre style="white-space: pre-wrap; margin:0;">cd scripts<br>bash eval_margin.sh</pre> | PC-sampler            | <pre style="white-space: pre-wrap; margin:0;">cd scripts<br>bash eval_pc_sampler.sh</pre> |
+| ReMDM   | <pre style="white-space: pre-wrap; margin:0;">cd scripts<br>bash eval_remdm.sh</pre> | Linear_Position               | <pre style="white-space: pre-wrap; margin:0;">cd scripts<br>bash eval_linear_position.sh</pre> |
 
 ### Evaluation of Decoding Methods
 All decoding methods are evaluated on the same set of datasets: **HumanEval**, **MBPP**, **GSM8K**, **MATH-500**, **GPQA**, **Countdown**, and **Sudoku**. Evaluation results are saved in the `results` folder.
@@ -80,6 +93,16 @@ All decoding methods are evaluated on the same set of datasets: **HumanEval**, *
 
 #### Consistency Note
 All methods are evaluated using the same set of evaluation scripts (including both `lm-eval` and our custom script) to ensure consistent assessment.
+
+### Painting Heatmap
+We provide a script to generate heatmaps for the decoding trajectories of different decoding methods. The script is located in `scripts/heatmap.sh`.
+
+```bash
+cd scripts
+bash heatmap.sh
+```
+#### Results
+The heatmap results are saved in the `heatmap_results` folder.
 
 # 📈 Decoding Trajectory
 
@@ -126,7 +149,7 @@ The complete workflow of PC-Sampler is summarized in the following algorithm:
     -   $\mathcal{M}_t \gets \{i \mid x^i = \text{[MASK]}\}$ `// Get mask indices`
     -   **if** $\mathcal{M}_t = \emptyset$ **then**
         -   **break**
-    -   $\hat{x}_0, \hat{p}^i \gets p_{\theta}(\cdot \mid x),\ \forall i \in \mathcal{M}_t$
+    -   $\hat{x}_0, \hat{p}^i \gets p_{\theta}(\cdot \mid x)$
     -   **for** each position $i \in \mathcal{M}_t$ **do**
         -   $\mathcal{C}^{(i)} \gets \hat{p}^i \cdot \log p_{\mathcal{D}'}(x^i)$
         -   $\mathcal{C}^{(i)} \gets \min(\mathcal{C}^{(i)}, \alpha)$ `// Clip salience score`

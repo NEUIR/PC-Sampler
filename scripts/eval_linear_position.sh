@@ -12,7 +12,7 @@ echo "---------------------------Eval HumanEval---------------------------"
 
 python eval.py \
     --task 'humaneval' \
-    --model_name '/mnt2/huangpengcheng/Liushuhao/LLaDA/GSAI-ML/LLaDA-8B-Instruct' \
+    --model_name 'GSAI-ML/LLaDA-8B-Instruct' \
     --device 'cuda:0' \
     --gen_length 256 \
     --steps 256 \
@@ -31,7 +31,7 @@ echo "---------------------------Eval MBPP---------------------------"
 
 python eval.py \
     --task 'mbpp' \
-    --model_name '/mnt2/huangpengcheng/Liushuhao/LLaDA/GSAI-ML/LLaDA-8B-Instruct' \
+    --model_name 'GSAI-ML/LLaDA-8B-Instruct' \
     --device 'cuda:0' \
     --gen_length 128 \
     --steps 128 \
@@ -50,7 +50,7 @@ echo "---------------------------Eval MATH-500---------------------------"
 
 python eval.py \
     --task 'math500' \
-    --model_name '/mnt2/huangpengcheng/Liushuhao/LLaDA/GSAI-ML/LLaDA-8B-Instruct' \
+    --model_name 'GSAI-ML/LLaDA-8B-Instruct' \
     --device 'cuda:0' \
     --gen_length 1024 \
     --steps 1024 \
@@ -65,7 +65,7 @@ echo "---------------------------Eval Sudoku---------------------------"
 
 python eval.py \
     --task 'sudoku' \
-    --model_name '/mnt2/huangpengcheng/Liushuhao/LLaDA/GSAI-ML/LLaDA-8B-Instruct' \
+    --model_name 'GSAI-ML/LLaDA-8B-Instruct' \
     --device 'cuda:0' \
     --gen_length 128 \
     --steps 128 \
@@ -80,7 +80,7 @@ echo "---------------------------Eval Countdown---------------------------"
 
 python eval.py \
     --task 'countdown' \
-    --model_name '/mnt2/huangpengcheng/Liushuhao/LLaDA/GSAI-ML/LLaDA-8B-Instruct' \
+    --model_name 'GSAI-ML/LLaDA-8B-Instruct' \
     --device 'cuda:0' \
     --gen_length 128 \
     --steps 128 \
