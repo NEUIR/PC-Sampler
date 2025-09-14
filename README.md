@@ -115,7 +115,7 @@ In contrast, our PC-Sampler introduces explicit trajectory control through posit
 | Sampling Strategy   | Decoding Trajectory Heatmap   | Sampling Strategy   | Decoding Trajectory Heatmap   |
 |---------------------|-------------------------------|---------------------|-------------------------------|
 | Confidence-based    | ![](figs/confidence.png)      | Entropy-based       | ![](figs/entropy.png)         |  
-| Margin-based        | ![](figs/margin.png)          | linear position   | ![](figs/linear.png)      |  
+| Margin-based        | ![](figs/margin.png)          | PC Sampler   | ![](figs/linear.png)      |  
 
 ## 🔑 Key Observations
 
@@ -163,11 +163,11 @@ The complete workflow of PC-Sampler is summarized in the following algorithm:
 
 ## Hyperparameters
 
-- $\lambda$ (lambda_val): Controls positional bias strength. Typical values range from 0 (no positional bias) to 0.5 (strong left-to-right bias). Recommended: 0 for Sudoku, 0.25 for most tasks, 0.5 for Countdown .
+- $\lambda$ (lambda_val): Controls positional bias strength. Typical values range from 0 (no positional bias) to 1.0 (strong left-to-right bias). Recommended: 0 for Sudoku, 0.25 for most tasks, 0.5 for Countdown .
 
 - $\alpha$: Clipping threshold for confidence scores. Recommended value: 10 (provides stable results across tasks) .
 
-- Background frequency distribution ($p_{\mathcal{D}'}$): Constructed from a comprehensive corpus combining general text, mathematical reasoning problems, and evaluation datasets .
+- Background frequency distribution ($p_{\mathcal{D}'}$): Constructed from a comprehensive corpus combining general text, mathematical reasoning problems, and evaluation datasets (see /data/baseline) .
 
 
 

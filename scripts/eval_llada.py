@@ -53,7 +53,7 @@ class LLaDAEvalHarness(LM):
         mode='original',
         lambd=0.25,
         alpha=10,
-        baseline_name='baseline/P_baseline_llada.json',
+        baseline_name='baseline/reference_corpus.json',
         thread=0.9,
         gamma=0.01,
         num_remask_tokens=4,
