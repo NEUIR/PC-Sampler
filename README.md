@@ -7,21 +7,24 @@
   <a href="https://arxiv.org/pdf/2508.13021" alt="Paper">
     <img src="https://img.shields.io/badge/Paper-PC--Sampler-B31B1B?logo=arxiv&logoColor=white"/>
   </a>
+  <a href="https://huggingface.co/papers/2508.13021" alt="HuggingFace Paper">
+    <img src="https://img.shields.io/badge/Daily Papers-PC--Sampler-yellow?logo=huggingface"/>
+  </a>
+  <a href="https://www.xiaohongshu.com/discovery/item/68c41aa8000000001d023bd2?source=webshare&xhsshare=pc_web&xsec_token=AB3G_zPuAAFw4PyGO6Pfc3UNgCJjwlPRpeAaIDzycLYIE=&xsec_source=pc_share" alt="Xiaohongshu">
+    <img src="https://img.shields.io/badge/Xiaohongshu-PC--Sampler-red?logo=xiaohongshu"/>
+  </a>
 </p>
+
 
 
 <p align="center">•
  <a href="#-introduction"> 📖 Introduction </a> •
  <a href="#-news">🎉 News</a> •
  <a href="#-PC-Sampler-pipeline">✨ PC-Sampler Pipeline</a> •
- <a href="#%EF%B8%8F-evaluation">⚡️ Evaluation</a> 
-</p>
-<p align="center">•
- <a href="#-decoding trajectory">📈 Decoding Trajectory</a> •
+ <a href="#-evaluation">⚡️ Evaluation</a> •
+ <a href="#-decoding-trajectory">📈 Decoding Trajectory</a> •
  <a href="#-algorithm">💻 Algorithm</a> •
- <a href="#-license">📄 Lisense</a> •
- <a href="#-contact">📧 Contact</a> •
- <a href="#-star-history">📈 Star History</a>
+ <a href="#-contact">📧 Contact</a> 
 </p>
 
 # 📖 Introduction
