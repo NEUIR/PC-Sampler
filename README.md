@@ -20,8 +20,10 @@
 <p align="center">•
  <a href="#-introduction"> 📖 Introduction </a> •
  <a href="#-news">🎉 News</a> •
- <a href="#-PC-Sampler-pipeline">✨ PC-Sampler Pipeline</a> •
- <a href="#-evaluation">⚡️ Evaluation</a> •
+ <a href="#-pc-sampler-pipeline">✨ PC-Sampler Pipeline</a> •
+ <a href="#-evaluation">⚡️ Evaluation</a> 
+</p>
+<p align="center" dir="auto"> •
  <a href="#-decoding-trajectory">📈 Decoding Trajectory</a> •
  <a href="#-algorithm">💻 Algorithm</a> •
  <a href="#-contact">📧 Contact</a> 
